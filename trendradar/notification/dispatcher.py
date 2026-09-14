@@ -180,17 +180,45 @@ class NotificationDispatcher:
         merged_result = BatchTranslationResult(total_count=total_count)
         batch_count = 0
 
+        # 预算与熔断：AI 服务不可用时每批会挂满超时（实测 2 次尝试 x 180s ≈ 6 分钟/批），
+        # 4 批会把 workflow 的 15 分钟时限烧穿导致整轮被砍、网页零更新（2026-09-13~15 事故）。
+        # 翻译是锦上添花：超预算/连续失败后放弃剩余批次、保留原文，主流程照常发布。
+        TRANSLATE_BUDGET_SECONDS = 300
+        budget_start = time.monotonic()
+        consecutive_failures = 0
+
         for i in range(0, total_count, batch_size):
             if batch_count > 0 and batch_interval > 0:
                 time.sleep(batch_interval)
+            elapsed = time.monotonic() - budget_start
+            if elapsed > TRANSLATE_BUDGET_SECONDS:
+                remaining = num_batches - batch_count
+                log.error(
+                    f"[翻译] 累计耗时 {elapsed:.0f}s 超预算 {TRANSLATE_BUDGET_SECONDS}s，"
+                    f"放弃剩余 {remaining} 批共 {total_count - i} 条（保留原文，不影响发布）"
+                )
+                break
             batch_texts = titles_to_translate[i:i + batch_size]
             batch_num = batch_count + 1
             if num_batches > 1:
                 log.info(f"[翻译] 第 {batch_num}/{num_batches} 批（{len(batch_texts)} 条）...")
             result = self.translator.translate_batch(batch_texts)
+            # 必须先合并再判断熔断：results 与标题按位置一一对应，跳过 extend 会错位
             merged_result.results.extend(result.results)
             merged_result.success_count += result.success_count
             merged_result.fail_count += result.fail_count
+            # 连续全失败熔断：单批偶发抖动可容忍，连续 2 批颗粒无收说明 AI 不可用
+            if len(batch_texts) > 0 and result.success_count == 0:
+                consecutive_failures += 1
+                if consecutive_failures >= 2:
+                    remaining_count = total_count - i - len(batch_texts)
+                    log.error(
+                        f"[翻译] 连续 {consecutive_failures} 批全部失败（疑似 AI 服务不可用），"
+                        f"跳过剩余 {remaining_count} 条（保留原文，不影响发布）"
+                    )
+                    break
+            else:
+                consecutive_failures = 0
 
             # debug 模式：输出每批的详细信息
             if self.config.get("DEBUG", False):

@@ -153,10 +153,40 @@ class AIDeduplicator:
 
         final: List[Dict] = []
         batches = [reps[i:i + self.batch_size] for i in range(0, len(reps), self.batch_size)]
+        # 预算与熔断：AI 服务不可用时每批会挂满超时（实测约 6 分钟/批），
+        # 不设防会和翻译环节一起烧穿 workflow 的 15 分钟时限（2026-09-13~15 事故）。
+        # 去重是可选增强：超预算/连续失败后放弃剩余批（保留未合并的原文），不影响主流程。
+        DEDUP_BUDGET_SECONDS = 300
+        budget_start = time.monotonic()
+        consecutive_failures = 0
         for batch_no, batch in enumerate(batches):
             if self.batch_interval > 0 and batch_no > 0:
                 time.sleep(self.batch_interval)
-            final.extend(self._dedup_batch(batch))
+            if time.monotonic() - budget_start > DEDUP_BUDGET_SECONDS:
+                log.warning(
+                    f"[语义去重] 累计 {time.monotonic() - budget_start:.0f}s 超预算 "
+                    f"{DEDUP_BUDGET_SECONDS}s，放弃剩余 {len(batches) - batch_no} 批（保留原文）"
+                )
+                final.extend(reps[batch_no * self.batch_size:])
+                break
+            try:
+                result = self._dedup_batch(batch)
+            except Exception as e:
+                # 单批失败就地消化，不让异常冒泡丢弃已成功的批次
+                log.warning(f"[语义去重] 第 {batch_no + 1} 批失败: {type(e).__name__}: {str(e)[:150]}")
+                result = batch
+            final.extend(result)
+            if result is batch:
+                consecutive_failures += 1
+                if consecutive_failures >= 2:
+                    log.warning(
+                        f"[语义去重] 连续 {consecutive_failures} 批失败（疑似 AI 服务不可用），"
+                        f"跳过剩余 {len(batches) - batch_no - 1} 批（保留原文）"
+                    )
+                    final.extend(reps[(batch_no + 1) * self.batch_size:])
+                    break
+            else:
+                consecutive_failures = 0
 
         return final
 

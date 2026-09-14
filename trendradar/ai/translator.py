@@ -246,7 +246,10 @@ class AITranslator:
                         batch_result.success_count += 1
 
             except Exception as e:
-                error_msg = f"批量翻译失败: {type(e).__name__}: {str(e)[:100]}"
+                error_msg = f"批量翻译失败: {type(e).__name__}: {str(e)[:200]}"
+                # 必须打出来：此前异常被静默吞掉，CI 日志里只有 litellm 的
+                # 尾部提示，看不到真实病因（429/401/连接超时无法区分）
+                log.error(error_msg)
                 # 仅未命中缓存的条目标记失败；缓存命中的已是成功态，不受影响
                 for idx in to_translate_indices:
                     batch_result.results[idx].error = error_msg
