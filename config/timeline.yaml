@@ -413,7 +413,7 @@ custom:
     morning_brief:
       name: "早班速览"
       start: "06:30"
-      end: "08:30"
+      end: "07:30"
       collect: true
       analyze: true
       ai_mode: "current"
@@ -425,8 +425,8 @@ custom:
 
     evening_summary:
       name: "晚间汇总"
-      start: "18:30"
-      end: "19:30"
+      start: "17:30"
+      end: "18:30"
       collect: true
       analyze: true
       ai_mode: "daily"
