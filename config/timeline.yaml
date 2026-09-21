@@ -413,7 +413,7 @@ custom:
     morning_brief:
       name: "早班速览"
       start: "06:30"
-      end: "07:30"
+      end: "08:30"
       collect: true
       analyze: true
       ai_mode: "current"
