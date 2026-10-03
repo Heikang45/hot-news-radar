@@ -1,0 +1,59 @@
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": "Hot News Radar 快照订阅",
+  "home_page_url": "https://leilaomi.github.io/hot-news-radar/",
+  "feed_url": "https://leilaomi.github.io/hot-news-radar/reports/feed.json",
+  "description": "每日新闻雷达快照更新通知",
+  "language": "zh-CN",
+  "items": [
+    {
+      "id": "2026-10-04",
+      "url": "https://leilaomi.github.io/hot-news-radar/reports/2026-10-04/06-24.html",
+      "title": "2026-10-04 热点雷达 · 3 个时段快照",
+      "content_text": "2026-10-04 共 3 次抓取，覆盖全天热点变化。首次 00:06，末次 06:24。",
+      "date_published": "2026-10-04T06:24:00+08:00"
+    },
+    {
+      "id": "2026-10-03",
+      "url": "https://leilaomi.github.io/hot-news-radar/reports/2026-10-03/20-00.html",
+      "title": "2026-10-03 热点雷达 · 6 个时段快照",
+      "content_text": "2026-10-03 共 6 次抓取，覆盖全天热点变化。首次 00:48，末次 20:00。",
+      "date_published": "2026-10-03T20:00:00+08:00"
+    },
+    {
+      "id": "2026-10-02",
+      "url": "https://leilaomi.github.io/hot-news-radar/reports/2026-10-02/19-20.html",
+      "title": "2026-10-02 热点雷达 · 5 个时段快照",
+      "content_text": "2026-10-02 共 5 次抓取，覆盖全天热点变化。首次 04:29，末次 19:20。",
+      "date_published": "2026-10-02T19:20:00+08:00"
+    },
+    {
+      "id": "2026-10-01",
+      "url": "https://leilaomi.github.io/hot-news-radar/reports/2026-10-01/23-23.html",
+      "title": "2026-10-01 热点雷达 · 6 个时段快照",
+      "content_text": "2026-10-01 共 6 次抓取，覆盖全天热点变化。首次 02:25，末次 23:23。",
+      "date_published": "2026-10-01T23:23:00+08:00"
+    },
+    {
+      "id": "2026-09-30",
+      "url": "https://leilaomi.github.io/hot-news-radar/reports/2026-09-30/20-58.html",
+      "title": "2026-09-30 热点雷达 · 6 个时段快照",
+      "content_text": "2026-09-30 共 6 次抓取，覆盖全天热点变化。首次 01:01，末次 20:58。",
+      "date_published": "2026-09-30T20:58:00+08:00"
+    },
+    {
+      "id": "2026-09-29",
+      "url": "https://leilaomi.github.io/hot-news-radar/reports/2026-09-29/19-33.html",
+      "title": "2026-09-29 热点雷达 · 5 个时段快照",
+      "content_text": "2026-09-29 共 5 次抓取，覆盖全天热点变化。首次 03:33，末次 19:33。",
+      "date_published": "2026-09-29T19:33:00+08:00"
+    },
+    {
+      "id": "2026-09-28",
+      "url": "https://leilaomi.github.io/hot-news-radar/reports/2026-09-28/19-38.html",
+      "title": "2026-09-28 热点雷达 · 6 个时段快照",
+      "content_text": "2026-09-28 共 6 次抓取，覆盖全天热点变化。首次 01:40，末次 19:38。",
+      "date_published": "2026-09-28T19:38:00+08:00"
+    }
+  ]
+}
